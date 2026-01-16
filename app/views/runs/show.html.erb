@@ -62,7 +62,11 @@
 
   available = lambda do |hex|
     next false if unlocked.call(hex)
-    neighbor_hexes = Hex.where(hex.neighbors.map { |q, r| { q: q, r: r } })
+    coords = hex.neighbors
+    neighbor_hexes = Hex.where(
+      coords.map { |_| "(q = ? AND r = ?)" }.join(" OR "),
+      *coords.flatten
+    )
     neighbor_hexes.any? { |nh| @unlocked_hex_ids.include?(nh.id) }
   end
 

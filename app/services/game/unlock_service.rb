@@ -1,3 +1,5 @@
+require "set"
+
 module Game
   class UnlockService
     class UnlockError < StandardError; end
@@ -17,6 +19,12 @@ module Game
       Run.transaction do
         spend!(cost)
         RunHex.create!(run: run, hex: hex, unlocked_at_turn: run.turn)
+
+        effect = hex.data["effect"]
+        if effect.present? && effect["timing"] == "on_unlock"
+          Game::EffectResolver.new(run).apply!(effect)
+        end
+
         run.save!
       end
 
@@ -32,12 +40,8 @@ module Game
     end
 
     def adjacent_to_unlocked?(h)
-      neighbor_coords = h.neighbors
-      neighbor_hex_ids = Hex.where(
-        neighbor_coords.map { |q, r| { q: q, r: r } }
-      ).pluck(:id)
-
-      run.run_hexes.where(hex_id: neighbor_hex_ids).exists?
+      unlocked_coords = run.hexes.pluck(:q, :r).to_set
+      h.neighbors.any? { |q, r| unlocked_coords.include?([ q, r ]) }
     end
 
     def resources_hash

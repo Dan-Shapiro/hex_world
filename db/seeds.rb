@@ -16,7 +16,7 @@ SPELLS = [
     key: "essence_tap",
     name: "Essence Tap",
     cost: { "essence" => 3 },
-    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 2, "timing" => "start_of_turn" },
+    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 2, "timing" => "on_unlock" },
     tags: [ "economy" ]
   },
   {
@@ -30,7 +30,7 @@ SPELLS = [
     key: "air_rune_craft",
     name: "Craft Air Runes",
     cost: { "essence" => 2 },
-    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "air_rune", "to_amount" => 1 },
+    effect: { "type" => "gain_resource", "resource" => "air_rune", "amount" => 1, "timing" => "on_unlock" },
     tags: [ "crafting", "air" ]
   },
   {
