@@ -8,7 +8,12 @@ module Game
       Run.transaction do
         apply_start_of_turn_effects!
 
+        s = run.state.deep_dup
+        s["threat"] = s.fetch("threat", 0).to_i + 1
+        run.state = s
+
         Game::WinChecker.new(run).check_and_apply!
+        Game::LossChecker.new(run).check_and_apply!
 
         run.turn = run.turn + 1
         run.save!

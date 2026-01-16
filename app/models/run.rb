@@ -28,5 +28,6 @@ class Run < ApplicationRecord
     self.state ||= {}
     self.state["resources"] ||= { "essence" => 0, "favor" => 0, "power" => 0 }
     self.state["alignment"] ||= "neutral"
+    self.state["threat"] ||= 0
   end
 end
