@@ -20,13 +20,6 @@ SPELLS = [
     tags: [ "economy" ]
   },
   {
-    key: "focus",
-    name: "Focus",
-    cost: { "essence" => 4 },
-    effect: { "type" => "discount_unlock", "resource" => "essence", "amount" => 1 },
-    tags: [ "utility" ]
-  },
-  {
     key: "air_rune_craft",
     name: "Craft Air Runes",
     cost: { "essence" => 2 },
@@ -46,6 +39,13 @@ SPELLS = [
     cost: {},
     effect: { "type" => "consume_and_gain", "consume" => { "air_rune" => 1, "mind_rune" => 1 }, "gain" => { "power" => 4 }, "timing" => "on_cast" },
     tags: [ "combat", "active" ]
+  },
+  {
+    key: "focus",
+    name: "Focus",
+    cost: { "essence" => 4 },
+    effect: { "type" => "discount_unlock", "resource" => "essence", "amount" => 1 },
+    tags: [ "utility" ]
   },
   {
     key: "sara_grace",
