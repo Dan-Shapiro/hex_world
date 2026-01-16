@@ -19,6 +19,11 @@ module Game
 
       Run.transaction do
         Game::EffectResolver.new(run).apply!(effect)
+
+        if run.state["alignment"].to_s == "zamorak"
+          run.inc_resource!("power", 1)
+        end
+
         Game::WinChecker.new(run).check_and_apply!
         Game::LossChecker.new(run).check_and_apply!
         run.save!

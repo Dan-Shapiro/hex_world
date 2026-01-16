@@ -8,8 +8,24 @@ module Game
       Run.transaction do
         apply_start_of_turn_effects!
 
+        if run.state["alignment"].to_s == "guthix"
+          run.inc_resource!("essence", 1)
+        end
+
         s = run.state.deep_dup
-        s["threat"] = s.fetch("threat", 0).to_i + 1
+        s["threat"] ||= 0
+
+        alignment = s["alignment"].to_s
+        turn = run.turn.to_i
+
+        increment =
+          if alignment == "saradomin"
+            (turn % 2 == 0) ? 1 : 0
+          else
+            1
+          end
+
+        s["threat"] = s.fetch("threat", 0).to_i + increment
         run.state = s
 
         Game::WinChecker.new(run).check_and_apply!

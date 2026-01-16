@@ -1,4 +1,17 @@
 <h1>Hex World</h1>
-<p>Spellbook prototype</p>
+<p>Choose your alignment to begin.</p>
 
-<%= button_to "Start Run", runs_path, method: :post %>
+<%= form_with url: runs_path, method: :post do %>
+  <div style="margin-bottom: 12px;">
+    <label><strong>Alignment:</strong></label><br>
+
+    <% @alignments.each do |a| %>
+      <label style="display:block; margin:6px 0;">
+        <%= radio_button_tag :alignment, a, (a == "guthix") %>
+        <%= a.capitalize %>
+      </label>
+    <% end %>
+  </div>
+
+  <%= submit_tag "Start Run" %>
+<% end %>
