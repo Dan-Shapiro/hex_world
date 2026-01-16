@@ -2,6 +2,8 @@
   <strong>Status:</strong> <%= run.status %>
   &nbsp;|&nbsp;
   <strong>Threat:</strong> <%= run.state.fetch("threat", 0) %> / 10
+  &nbsp;|&nbsp;
+  <strong>Alignment:</strong> <%= run.state["alignment"] %>
 </div>
 
 <div style="margin-bottom: 12px;">

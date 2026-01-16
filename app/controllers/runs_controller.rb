@@ -1,16 +1,19 @@
 class RunsController < ApplicationController
   def new
-    # start screen
+    @alignments = %w[saradomin zamorak guthix]
   end
 
   def create
+    alignment = params[:alignment].to_s
+    alignment = "guthix" unless %w[saradomin zamorak guthix].include?(alignment)
+
     run = Run.create!(
       seed: Random.rand(1_000_000_000),
       status: :active,
       turn: 1,
       state: {
         "resources" => { "essence" => 0, "favor" => 0, "power" => 0, "air_rune" => 0, "mind_rune" => 0 },
-        "alignment" => "neutral",
+        "alignment" => alignment,
         "threat" => 0
       }
     )
