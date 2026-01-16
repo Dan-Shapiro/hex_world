@@ -1,0 +1,31 @@
+<% return unless run.active? %>
+
+<%
+  unlocked_hexes = run.hexes
+  castable_hexes = unlocked_hexes.select do |hx|
+    effect = hx.data["effect"]
+    Array(hx.data["tags"]).include?("active") &&
+      effect.is_a?(Hash) &&
+      effect["timing"] == "on_cast"
+  end
+%>
+
+<% if castable_hexes.any? %>
+  <div style="padding:10px; border:1px solid #ddd; background:#fff; margin-bottom:12px;">
+    <strong>Cast Spells</strong>
+    <div style="margin-top:8px;">
+      <% castable_hexes.each do |hx| %>
+        <div style="margin-bottom:8px;">
+          <span><%= hx.data["name"] %></span>
+          <span style="margin-left:8px; color:#555;">
+            (cost: <%= format_cost(hx.data["cost"], effect: hx.data["effect"]) %>)
+          </span>
+          <%= button_to "Cast",
+                cast_run_path(run, hex_id: hx.id),
+                method: :post,
+                form: { style: "display:inline;" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

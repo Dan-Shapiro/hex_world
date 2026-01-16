@@ -1,5 +1,3 @@
-require "set"
-
 class RunsController < ApplicationController
   def new
     # start screen
@@ -26,7 +24,7 @@ class RunsController < ApplicationController
   def show
     @run = Run.find(params[:id])
     @hexes = Hex.order(:q, :r).all
-    @unlocked_hex_ids = @run.run_hexes.pluck(:hex_id).to_set
+    @presenter = Runs::ShowPresenter.new(run: @run, hexes: @hexes)
   end
 
   def unlock

@@ -1,0 +1,44 @@
+<svg
+  viewBox="<%= presenter.view_box %>"
+  width="900"
+  height="650"
+  style="border: 1px solid #ddd; background: #fafafa;"
+>
+  <% hexes.each do |h| %>
+    <% cx, cy = presenter.center_px(h) %>
+    <% name = h.data["name"] || h.spell_key %>
+    <% st = presenter.style_for(h) %>
+    <% is_available = presenter.available?(h) %>
+
+    <% tooltip = [
+      name,
+      "Cost: #{format_cost(h.data['cost'], effect: h.data['effect'])}",
+      ("Tags: #{Array(h.data['tags']).join(', ')}" if h.data["tags"].present?),
+      ("Status: unlocked" if presenter.unlocked?(h)),
+      ("Status: available" if is_available && !presenter.unlocked?(h)),
+      ("Status: locked" if !presenter.unlocked?(h) && !is_available)
+    ].compact.join("\n") %>
+
+    <% points = presenter.hex_points(cx, cy) %>
+
+    <% if presenter.active? && is_available %>
+      <a href="<%= unlock_run_path(run, hex_id: h.id) %>" style="cursor:pointer;">
+        <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="<%= st[:stroke] %>" stroke-width="2">
+          <title><%= tooltip %></title>
+        </polygon>
+        <text x="<%= cx.round(2) %>" y="<%= cy.round(2) %>" text-anchor="middle" dominant-baseline="middle"
+              font-size="12" fill="#111" style="pointer-events:none;">
+          <%= name %>
+        </text>
+      </a>
+    <% else %>
+      <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="<%= st[:stroke] %>" stroke-width="2">
+        <title><%= tooltip %></title>
+      </polygon>
+      <text x="<%= cx.round(2) %>" y="<%= cy.round(2) %>" text-anchor="middle" dominant-baseline="middle"
+            font-size="12" fill="#111" style="pointer-events:none;">
+        <%= name %>
+      </text>
+    <% end %>
+  <% end %>
+</svg>
