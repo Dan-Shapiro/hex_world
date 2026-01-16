@@ -8,15 +8,15 @@ SPELLS = [
   {
     key: "spark",
     name: "Spark",
-    cost: { "essence" => 0 },
-    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 1, "timing" => "start_of_turn" },
+    cost: {},
+    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 2, "timing" => "start_of_turn" },
     tags: [ "starter", "economy" ]
   },
   {
     key: "essence_tap",
     name: "Essence Tap",
-    cost: { "essence" => 3 },
-    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 2, "timing" => "on_unlock" },
+    cost: {},
+    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 5, "timing" => "on_unlock" },
     tags: [ "economy" ]
   },
   {
@@ -30,21 +30,21 @@ SPELLS = [
     key: "air_rune_craft",
     name: "Craft Air Runes",
     cost: { "essence" => 2 },
-    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "air_rune", "to_amount" => 1, "timing" => "on_cast" },
+    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 1, "to" => "air_rune", "to_amount" => 1, "timing" => "on_cast" },
     tags: [ "crafting", "air", "active" ]
   },
   {
     key: "mind_rune_craft",
     name: "Craft Mind Runes",
     cost: { "essence" => 2 },
-    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "mind_rune", "to_amount" => 1, "timing" => "on_cast" },
+    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 1, "to" => "mind_rune", "to_amount" => 1, "timing" => "on_cast" },
     tags: [ "crafting", "mind", "active" ]
   },
   {
     key: "strike",
     name: "Strike",
-    cost: { "air_rune" => 1, "mind_rune" => 1 },
-    effect: { "type" => "gain_resource", "resource" => "power", "amount" => 4, "timing" => "on_cast" },
+    cost: {},
+    effect: { "type" => "consume_and_gain", "consume" => { "air_rune" => 1, "mind_rune" => 1 }, "gain" => { "power" => 4 }, "timing" => "on_cast" },
     tags: [ "combat", "active" ]
   },
   {

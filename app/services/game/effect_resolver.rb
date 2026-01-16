@@ -25,6 +25,18 @@ module Game
         run.inc_resource!(from, -from_amount)
         run.inc_resource!(to, to_amount)
 
+      when "consume_and_gain"
+        consume = (effect[:consume] || {}).to_h.transform_keys(&:to_s)
+        gain = (effect[:gain] || {}).to_h.transform_keys(&:to_s)
+
+        can_pay = consume.all? do |k, v|
+          v.to_i <= 0 || run.resources.fetch(k, 0).to_i >= v.to_i
+        end
+        return unless can_pay
+
+        consume.each { |k, v| run.inc_resource!(k, -v.to_i) }
+        gain.each { |k, v| run.inc_resource!(k, v.to_i) }
+
       else
         # more effects
       end
