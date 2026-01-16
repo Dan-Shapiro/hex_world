@@ -2,7 +2,7 @@ class Run < ApplicationRecord
   has_many :run_hexes, dependent: :destroy
   has_many :hexes, through: :run_hexes
 
-  enum status: { active: 0, won: 1, lost: 2 }
+  enum :status, { active: 0, won: 1, lost: 2 }
 
   after_initialize :set_default_state, if: :new_record?
 

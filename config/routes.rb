@@ -1,3 +1,4 @@
 Rails.application.routes.draw do
-  root "world#show"
+  resources :runs, only: [ :new, :create, :show ]
+  root "runs#new"
 end
