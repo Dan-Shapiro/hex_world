@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  q: 1
+  r: 1
+  spell_key: MyString
+  data: 
+
+two:
+  q: 1
+  r: 1
+  spell_key: MyString
+  data: 
