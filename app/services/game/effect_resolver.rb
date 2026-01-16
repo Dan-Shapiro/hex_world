@@ -5,8 +5,16 @@ module Game
     end
 
     def apply!(effect)
-      # interpret effect json and mutate run state
-      raise NotImplementedError
+      type = effect["type"]
+
+      case type
+      when "gain_resource"
+        resource = effect.fetch("resource")
+        amount = effect.fetch("amount").to_i
+        run.inc_resource!(resource, amount)
+      else
+        # more effects
+      end
     end
 
     private

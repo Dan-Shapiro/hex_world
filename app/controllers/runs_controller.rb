@@ -33,8 +33,15 @@ class RunsController < ApplicationController
     hex = Hex.find(params[:hex_id])
 
     Game::UnlockService.new(run: @run, hex: hex).unlock!
-    redirect_to run_path(@run), notice: "Unlocked #{hex.data['name']}"
+    redirect_to run_path(@run), notice: "unlocked #{hex.data['name']}"
   rescue Game::UnlockService::UnlockError => e
     redirect_to run_path(@run), alert: e.message
+  end
+
+  def end_turn
+    run = Run.find(params[:id])
+
+    Game::RunEngine.new(run).end_turn!
+    redirect_to run_path(run), notice: "turn advanced to #{run.turn}"
   end
 end

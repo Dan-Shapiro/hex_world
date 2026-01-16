@@ -22,6 +22,10 @@
   <strong>Power:</strong> <%= @run.resources["power"] %>
 </div>
 
+<div style="margin-bottom: 14px;">
+  <%= button_to "End Turn", end_turn_run_path(@run), method: :post %>
+</div>
+
 <%
   size = 42.0
   sqrt3 = Math.sqrt(3)
