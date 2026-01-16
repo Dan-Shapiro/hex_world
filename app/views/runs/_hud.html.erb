@@ -1,0 +1,35 @@
+<div style="margin-bottom: 8px;">
+  <strong>Status:</strong> <%= run.status %>
+  &nbsp;|&nbsp;
+  <strong>Threat:</strong> <%= run.state.fetch("threat", 0) %> / 10
+</div>
+
+<div style="margin-bottom: 12px;">
+  <strong>Turn:</strong> <%= run.turn %>
+</div>
+
+<div style="margin-bottom: 14px;">
+  <strong>Resources:</strong>
+  <% run.resources.sort_by { |k, _| k }.each do |k, v| %>
+    <span style="display:inline-block; margin-right:10px;">
+      <%= k %>: <%= v %>
+    </span>
+  <% end %>
+</div>
+
+<% if run.active? %>
+  <div style="margin-bottom: 14px;">
+    <%= button_to "End Turn", end_turn_run_path(run), method: :post %>
+  </div>
+<% end %>
+
+<div style="margin-bottom: 10px; font-size: 14px;">
+  <span style="display:inline-block; width:12px; height:12px; background:#e8f5ff; border:2px solid #1976d2; vertical-align:middle;"></span>
+  Unlocked
+  &nbsp;&nbsp;
+  <span style="display:inline-block; width:12px; height:12px; background:#fff8e1; border:2px solid #f57c00; vertical-align:middle;"></span>
+  Available
+  &nbsp;&nbsp;
+  <span style="display:inline-block; width:12px; height:12px; background:#f3f3f3; border:2px solid #999; vertical-align:middle;"></span>
+  Locked
+</div>
