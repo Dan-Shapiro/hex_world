@@ -29,18 +29,20 @@ class RunsController < ApplicationController
   end
 
   def unlock
-    @run = Run.find(params[:id])
+    run = Run.find(params[:id])
     hex = Hex.find(params[:hex_id])
+    return redirect_to run_path(run), alert: "run is #{run.status}" unless run.active?
 
-    Game::UnlockService.new(run: @run, hex: hex).unlock!
-    redirect_to run_path(@run), notice: "unlocked #{hex.data['name']}"
+    Game::UnlockService.new(run: run, hex: hex).unlock!
+    redirect_to run_path(run), notice: "unlocked #{hex.data['name']}"
   rescue Game::UnlockService::UnlockError => e
-    redirect_to run_path(@run), alert: e.message
+    redirect_to run_path(run), alert: e.message
   end
 
   def cast
     run = Run.find(params[:id])
     hex = Hex.find(params[:hex_id])
+    return redirect_to run_path(run), alert: "run is #{run.status}" unless run.active?
 
     Game::CastService.new(run: run, hex: hex).cast!
     redirect_to run_path(run), notice: "cast #{hex.data['name']}"
@@ -50,6 +52,7 @@ class RunsController < ApplicationController
 
   def end_turn
     run = Run.find(params[:id])
+    return redirect_to run_path(run), alert: "run is #{run.status}" unless run.active?
 
     Game::RunEngine.new(run).end_turn!
     redirect_to run_path(run), notice: "turn advanced to #{run.turn}"

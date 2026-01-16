@@ -7,6 +7,9 @@ module Game
     def end_turn!
       Run.transaction do
         apply_start_of_turn_effects!
+
+        Game::WinChecker.new(run).check_and_apply!
+
         run.turn = run.turn + 1
         run.save!
       end

@@ -1,5 +1,15 @@
 <h2>Run <%= @run.id %></h2>
 
+<% if @run.won? %>
+  <div style="padding:12px; border:2px solid #2e7d32; background:#e8f5e9; margin:12px 0;">
+    <h3 style="margin:0 0 6px 0;">Victory!</h3>
+    <div>You reached <strong><%= @run.resources["power"] %></strong> Power.</div>
+    <div style="margin-top:10px;">
+      <%= button_to "Start New Run", runs_path, method: :post %>
+    </div>
+  </div>
+<% end %>
+
 <% if notice %>
   <div style="padding:8px; background:#e8f5e9; border:1px solid #c8e6c9; margin-bottom:10px;">
     <%= notice %>
@@ -26,7 +36,9 @@
 </div>
 
 <div style="margin-bottom: 14px;">
-  <%= button_to "End Turn", end_turn_run_path(@run), method: :post %>
+  <% if @run.active? %>
+    <%= button_to "End Turn", end_turn_run_path(@run), method: :post %>
+  <% end %>
 </div>
 
 <%
@@ -110,9 +122,13 @@
         <div style="margin-bottom:8px;">
           <span><%= hx.data["name"] %></span>
           <span style="margin-left:8px; color:#555;">
-            (cost: <%= format_cost(hx.data["cost"]) %>)
+            (cost: <%= format_cost(hx.data["cost"], effect: hx.data["effect"]) %>)
           </span>
-          <%= button_to "Cast", cast_run_path(@run, hex_id: hx.id), method: :post, form: { style: "display:inline;" } %>
+          <%= button_to "Cast",
+            cast_run_path(@run, hex_id: hx.id),
+            method: :post,
+            disabled: !@run.active?,
+            form: { style: "display:inline;" } %>
         </div>
       <% end %>
     </div>
@@ -168,7 +184,7 @@
         end
     %>
 
-    <% if is_available %>
+    <% if @run.active? && is_available %>
       <a href="<%= unlock_run_path(@run, hex_id: h.id) %>"
         data-turbo-method="post"
         style="cursor:pointer;">
