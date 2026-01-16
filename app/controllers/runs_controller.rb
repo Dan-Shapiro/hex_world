@@ -38,6 +38,16 @@ class RunsController < ApplicationController
     redirect_to run_path(@run), alert: e.message
   end
 
+  def cast
+    run = Run.find(params[:id])
+    hex = Hex.find(params[:hex_id])
+
+    Game::CastService.new(run: run, hex: hex).cast!
+    redirect_to run_path(run), notice: "cast #{hex.data['name']}"
+  rescue Game::CastService::CastError => e
+    redirect_to run_path(run), alert: e.message
+  end
+
   def end_turn
     run = Run.find(params[:id])
 

@@ -14,10 +14,10 @@ module Game
         run.inc_resource!(resource, amount)
 
       when "convert_resource"
-        from = effect.fetch("from").to_s
-        from_amount = effect.fetch("from_amount").to_i
-        to = effect.fetch("to").to_s
-        to_amount = effect.fetch("to_amount").to_i
+        from = effect.fetch(:from).to_s
+        from_amount = effect.fetch(:from_amount).to_i
+        to = effect.fetch(:to).to_s
+        to_amount = effect.fetch(:to_amount).to_i
 
         have = run.resources.fetch(from, 0).to_i
         return if have < from_amount

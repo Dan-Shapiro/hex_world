@@ -30,15 +30,15 @@ SPELLS = [
     key: "air_rune_craft",
     name: "Craft Air Runes",
     cost: { "essence" => 2 },
-    effect: { "type" => "gain_resource", "resource" => "air_rune", "amount" => 1, "timing" => "on_unlock" },
-    tags: [ "crafting", "air" ]
+    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "air_rune", "to_amount" => 1, "timing" => "on_cast" },
+    tags: [ "crafting", "air", "active" ]
   },
   {
     key: "mind_rune_craft",
     name: "Craft Mind Runes",
     cost: { "essence" => 2 },
-    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "mind_rune", "to_amount" => 1 },
-    tags: [ "crafting", "mind" ]
+    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "mind_rune", "to_amount" => 1, "timing" => "on_cast" },
+    tags: [ "crafting", "mind", "active" ]
   },
   {
     key: "strike",
@@ -76,27 +76,31 @@ ordered = coords.sort_by { |(q, r)| [ q.abs + r.abs, q, r ] }
 ordered.delete(center)
 ordered.unshift(center)
 
-Hex.transaction do
+ActiveRecord::Base.transaction do
+  RunHex.delete_all
+  Run.delete_all
   Hex.delete_all
 
-  ordered.each_with_index do |(q, r), idx|
-    spell = if [ q, r ] == center
-      SPELLS.first
-    else
-      SPELLS[1 + ((idx - 1) % (SPELLS.length - 1))]
-    end
+  Hex.transaction do
+    ordered.each_with_index do |(q, r), idx|
+      spell = if [ q, r ] == center
+        SPELLS.first
+      else
+        SPELLS[1 + ((idx - 1) % (SPELLS.length - 1))]
+      end
 
-    Hex.create!(
-      q: q,
-      r: r,
-      spell_key: "#{spell[:key]}_#{q}_#{r}", # unique per tile
-      data: {
-        "name" => spell[:name],
-        "cost" => spell[:cost],
-        "effect" => spell[:effect],
-        "tags" => spell[:tags]
-      }
-    )
+      Hex.create!(
+        q: q,
+        r: r,
+        spell_key: "#{spell[:key]}_#{q}_#{r}", # unique per tile
+        data: {
+          "name" => spell[:name],
+          "cost" => spell[:cost],
+          "effect" => spell[:effect],
+          "tags" => spell[:tags]
+        }
+      )
+    end
   end
 end
 
