@@ -18,6 +18,7 @@ class RunsController < ApplicationController
       }
     )
 
+    Game::RunSetup.new(run).assign_spellbook!
     center = Hex.find_by!(q: 0, r: 0)
     RunHex.create!(run: run, hex: center, unlocked_at_turn: run.turn)
 
@@ -33,10 +34,11 @@ class RunsController < ApplicationController
   def unlock
     run = Run.find(params[:id])
     hex = Hex.find(params[:hex_id])
+    spell = run.spell_for(hex)
     return redirect_to run_path(run), alert: "run is #{run.status}" unless run.active?
 
     Game::UnlockService.new(run: run, hex: hex).unlock!
-    redirect_to run_path(run), notice: "unlocked #{hex.data['name']}"
+    redirect_to run_path(run), notice: "unlocked #{spell['name']}"
   rescue Game::UnlockService::UnlockError => e
     redirect_to run_path(run), alert: e.message
   end
@@ -44,10 +46,11 @@ class RunsController < ApplicationController
   def cast
     run = Run.find(params[:id])
     hex = Hex.find(params[:hex_id])
+    spell = run.spell_for(hex)
     return redirect_to run_path(run), alert: "run is #{run.status}" unless run.active?
 
     Game::CastService.new(run: run, hex: hex).cast!
-    redirect_to run_path(run), notice: "cast #{hex.data['name']}"
+    redirect_to run_path(run), notice: "cast #{spell['name']}"
   rescue Game::CastService::CastError => e
     redirect_to run_path(run), alert: e.message
   end

@@ -10,14 +10,21 @@ module Game
     def cast!
       raise CastError, "spell not unlocked" unless unlocked?(hex)
 
-      tags = Array(hex.data["tags"])
+      spell = run.spell_for(hex)
+      raise CastError, "no spell assigned" if spell.blank?
+
+      tags = Array(spell["tags"])
       raise CastError, "spell is not castable" unless tags.include?("active")
 
-      effect = hex.data["effect"]
+      effect = spell["effect"]
       effect = effect.is_a?(Hash) ? effect.with_indifferent_access : nil
       raise CastError, "no cast effect." if effect.blank? || effect[:timing] != "on_cast"
 
+      cast_cost = (spell["cast_cost"] || {}).transform_keys(&:to_s)
+      ensure_can_pay!(cast_cost)
+
       Run.transaction do
+        spend!(cast_cost)
         Game::EffectResolver.new(run).apply!(effect)
 
         if run.state["alignment"].to_s == "zamorak"

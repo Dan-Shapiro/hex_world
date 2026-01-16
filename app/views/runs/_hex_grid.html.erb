@@ -6,14 +6,15 @@
 >
   <% hexes.each do |h| %>
     <% cx, cy = presenter.center_px(h) %>
-    <% name = h.data["name"] || h.spell_key %>
+    <% spell = run.spell_for(h) %>
+    <% name = spell ? spell["name"] : "(unassigned)" %>
     <% st = presenter.style_for(h) %>
     <% is_available = presenter.available?(h) %>
 
     <% tooltip = [
       name,
-      "Cost: #{format_cost(h.data['cost'], effect: h.data['effect'])}",
-      ("Tags: #{Array(h.data['tags']).join(', ')}" if h.data["tags"].present?),
+      "Unlock Cost: #{format_cost(spell['cost'])}",
+      ("Tags: #{Array(spell['tags']).join(', ')}" if spell["tags"].present?),
       ("Status: unlocked" if presenter.unlocked?(h)),
       ("Status: available" if is_available && !presenter.unlocked?(h)),
       ("Status: locked" if !presenter.unlocked?(h) && !is_available)
