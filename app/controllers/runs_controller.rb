@@ -36,6 +36,13 @@ class RunsController < ApplicationController
     @run = Run.find(params[:id])
     @hexes = Hex.order(:q, :r).all
     @presenter = Runs::ShowPresenter.new(run: @run, hexes: @hexes)
+
+    @selected_hex =
+      if params[:hex_id].present?
+        Hex.find_by(id: params[:hex_id])
+      else
+        Hex.find_by(q: 0, r: 0)
+      end
   end
 
   def unlock

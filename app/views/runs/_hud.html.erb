@@ -1,37 +1,40 @@
-<div style="margin-bottom: 8px;">
-  <strong>Status:</strong> <%= run.status %>
-  &nbsp;|&nbsp;
-  <strong>Threat:</strong> <%= run.state.fetch("threat", 0) %> / 10
-  &nbsp;|&nbsp;
-  <strong>Alignment:</strong> <%= run.state["alignment"] %>
-</div>
-
-<div style="margin-bottom: 12px;">
-  <strong>Turn:</strong> <%= run.turn %>
-</div>
-
-<div style="margin-bottom: 14px;">
-  <strong>Resources:</strong>
-  <% run.resources.sort_by { |k, _| k }.each do |k, v| %>
-    <span style="display:inline-block; margin-right:10px;">
-      <%= k %>: <%= v %>
-    </span>
-  <% end %>
-</div>
-
-<% if run.active? %>
-  <div style="margin-bottom: 14px;">
-    <%= button_to "End Turn", end_turn_run_path(run), method: :post %>
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Run</div>
+    <div class="panel-chip"><%= run.status.upcase %></div>
   </div>
-<% end %>
 
-<div style="margin-bottom: 10px; font-size: 14px;">
-  <span style="display:inline-block; width:12px; height:12px; background:#e8f5ff; border:2px solid #1976d2; vertical-align:middle;"></span>
-  Unlocked
-  &nbsp;&nbsp;
-  <span style="display:inline-block; width:12px; height:12px; background:#fff8e1; border:2px solid #f57c00; vertical-align:middle;"></span>
-  Available
-  &nbsp;&nbsp;
-  <span style="display:inline-block; width:12px; height:12px; background:#f3f3f3; border:2px solid #999; vertical-align:middle;"></span>
-  Locked
+  <div class="kv">
+    <div class="kv-row"><div class="k">Turn</div><div class="v"><%= run.turn %></div></div>
+    <div class="kv-row"><div class="k">Alignment</div><div class="v"><%= run.state["alignment"] %></div></div>
+    <div class="kv-row"><div class="k">Threat</div><div class="v"><%= run.state.fetch("threat", 0) %> / 10</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="resources">
+    <div class="resources-title">Resources</div>
+    <div class="resources-grid">
+      <% run.resources.sort_by { |k, _| k }.each do |k, v| %>
+        <div class="resource">
+          <div class="rk"><%= k %></div>
+          <div class="rv"><%= v %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if run.active? %>
+    <div class="actionbar">
+      <%= button_to "End Turn", end_turn_run_path(run), method: :post, class: "btn btn-primary btn-wide" %>
+    </div>
+  <% end %>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch swatch-unlocked"></span>Unlocked</div>
+    <div class="legend-item"><span class="swatch swatch-available"></span>Available</div>
+    <div class="legend-item"><span class="swatch swatch-locked"></span>Locked</div>
+    <div class="legend-item"><span class="swatch swatch-unknown"></span>Unknown</div>
+    <div class="legend-item"><span class="swatch swatch-selected"></span>Selected</div>
+  </div>
 </div>

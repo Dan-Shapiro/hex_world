@@ -1,17 +1,17 @@
 <% if run.won? %>
-  <div style="padding:12px; border:2px solid #2e7d32; background:#e8f5e9; margin:12px 0;">
-    <h3 style="margin:0 0 6px 0;">Victory!</h3>
-    <div>You reached <strong><%= run.resources["power"] %></strong> Power.</div>
-    <div style="margin-top:10px;">
-      <%= button_to "Start New Run", runs_path, method: :post %>
+  <div class="banner banner-win">
+    <div class="banner-title">Victory</div>
+    <div class="banner-text">You reached <strong><%= run.resources["power"] %></strong> Power.</div>
+    <div class="banner-actions">
+      <%= button_to "Start New Run", runs_path, method: :post, class: "btn btn-primary" %>
     </div>
   </div>
 <% elsif run.lost? %>
-  <div style="padding:12px; border:2px solid #c62828; background:#ffebee; margin:12px 0;">
-    <h3 style="margin:0 0 6px 0;">Defeat</h3>
-    <div>Your threat reached <strong><%= run.state.fetch("threat", 0) %></strong>.</div>
-    <div style="margin-top:10px;">
-      <%= button_to "Start New Run", runs_path, method: :post %>
+  <div class="banner banner-lose">
+    <div class="banner-title">Defeat</div>
+    <div class="banner-text">Threat reached <strong><%= run.state.fetch("threat", 0) %></strong>.</div>
+    <div class="banner-actions">
+      <%= button_to "Start New Run", runs_path, method: :post, class: "btn btn-primary" %>
     </div>
   </div>
 <% end %>
