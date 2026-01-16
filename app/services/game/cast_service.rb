@@ -20,6 +20,7 @@ module Game
       Run.transaction do
         Game::EffectResolver.new(run).apply!(effect)
         Game::WinChecker.new(run).check_and_apply!
+        Game::LossChecker.new(run).check_and_apply!
         run.save!
       end
 

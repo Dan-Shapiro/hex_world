@@ -10,6 +10,16 @@
   </div>
 <% end %>
 
+<% if @run.lost? %>
+  <div style="padding:12px; border:2px solid #c62828; background:#ffebee; margin:12px 0;">
+    <h3 style="margin:0 0 6px 0;">Defeat</h3>
+    <div>Your threat reached <strong><%= @run.state.fetch("threat", 0) %></strong>.</div>
+    <div style="margin-top:10px;">
+      <%= button_to "Start New Run", runs_path, method: :post %>
+    </div>
+  </div>
+<% end %>
+
 <% if notice %>
   <div style="padding:8px; background:#e8f5e9; border:1px solid #c8e6c9; margin-bottom:10px;">
     <%= notice %>
@@ -33,6 +43,12 @@
       <%= k %>: <%= v %>
     </span>
   <% end %>
+</div>
+
+<div style="margin-bottom: 8px;">
+  <strong>Status:</strong> <%= @run.status %>
+  &nbsp;|&nbsp;
+  <strong>Threat:</strong> <%= @run.state.fetch("threat", 0) %> / 10
 </div>
 
 <div style="margin-bottom: 14px;">

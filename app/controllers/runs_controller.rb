@@ -12,7 +12,8 @@ class RunsController < ApplicationController
       turn: 1,
       state: {
         "resources" => { "essence" => 0, "favor" => 0, "power" => 0, "air_rune" => 0, "mind_rune" => 0 },
-        "alignment" => "neutral"
+        "alignment" => "neutral",
+        "threat" => 0
       }
     )
 
