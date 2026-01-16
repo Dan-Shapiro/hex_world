@@ -19,8 +19,15 @@ class RunsController < ApplicationController
     )
 
     Game::RunSetup.new(run).assign_spellbook!
+
     center = Hex.find_by!(q: 0, r: 0)
+
     RunHex.create!(run: run, hex: center, unlocked_at_turn: run.turn)
+
+    s = run.state.deep_dup
+    s["revealed_hex_ids"] = [ center.id.to_s ]
+    run.state = s
+    run.save!
 
     redirect_to run_path(run)
   end

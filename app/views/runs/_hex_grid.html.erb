@@ -4,42 +4,84 @@
   height="650"
   style="border: 1px solid #ddd; background: #fafafa;"
 >
+  <g>
+    <% hexes.each do |h| %>
+      <% cx, cy = presenter.center_px(h) %>
+      <% points = presenter.hex_points(cx, cy) %>
+      <polygon
+        points="<%= points %>"
+        fill="none"
+        stroke="#666"
+        stroke-width="2"
+        stroke-linejoin="round"
+      />
+    <% end %>
+  </g>
+
   <% hexes.each do |h| %>
     <% cx, cy = presenter.center_px(h) %>
-    <% spell = run.spell_for(h) %>
-    <% name = spell ? spell["name"] : "(unassigned)" %>
-    <% st = presenter.style_for(h) %>
-    <% is_available = presenter.available?(h) %>
-
-    <% tooltip = [
-      name,
-      "Unlock Cost: #{format_cost(spell['cost'])}",
-      ("Tags: #{Array(spell['tags']).join(', ')}" if spell["tags"].present?),
-      ("Status: unlocked" if presenter.unlocked?(h)),
-      ("Status: available" if is_available && !presenter.unlocked?(h)),
-      ("Status: locked" if !presenter.unlocked?(h) && !is_available)
-    ].compact.join("\n") %>
-
     <% points = presenter.hex_points(cx, cy) %>
 
-    <% if presenter.active? && is_available %>
+    <% revealed = presenter.revealed?(h) %>
+    <% spell = revealed ? run.spell_for(h) : nil %>
+    <% name = revealed && spell ? spell["name"] : "???" %>
+
+    <% st = presenter.style_for(h) %>
+    <% is_available = presenter.available?(h) %>
+    <% clickable = presenter.active? && is_available %>
+
+    <% tooltip =
+      if revealed && spell
+        [
+          name,
+          "Unlock Cost: #{format_cost(spell['cost'])}",
+          ("Tags: #{Array(spell['tags']).join(', ')}" if spell["tags"].present?)
+        ].compact.join("\n")
+      else
+        "Unknown Spell"
+      end
+    %>
+
+    <% lines = hex_label_lines(name, max_chars_per_line: 15) %>
+    <% fs = hex_font_size(name) %>
+
+    <% if clickable %>
       <a href="<%= unlock_run_path(run, hex_id: h.id) %>" style="cursor:pointer;">
-        <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="<%= st[:stroke] %>" stroke-width="2">
-          <title><%= tooltip %></title>
-        </polygon>
-        <text x="<%= cx.round(2) %>" y="<%= cy.round(2) %>" text-anchor="middle" dominant-baseline="middle"
-              font-size="12" fill="#111" style="pointer-events:none;">
-          <%= name %>
-        </text>
-      </a>
-    <% else %>
-      <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="<%= st[:stroke] %>" stroke-width="2">
+    <% end %>
+
+      <!-- PASS 2: fill only -->
+      <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="none">
         <title><%= tooltip %></title>
       </polygon>
-      <text x="<%= cx.round(2) %>" y="<%= cy.round(2) %>" text-anchor="middle" dominant-baseline="middle"
-            font-size="12" fill="#111" style="pointer-events:none;">
-        <%= name %>
+
+      <!-- PASS 3: highlight outline (drawn on top so it never gets clipped) -->
+      <polygon
+        points="<%= points %>"
+        fill="none"
+        stroke="<%= st[:stroke] %>"
+        stroke-width="4"
+        stroke-linejoin="round"
+      />
+
+      <!-- label -->
+      <text
+        x="<%= cx.round(2) %>"
+        y="<%= cy.round(2) %>"
+        text-anchor="middle"
+        font-size="<%= fs %>"
+        fill="#111"
+        style="pointer-events:none; font-family: Georgia, 'Times New Roman', serif;"
+      >
+        <% if lines.length == 1 %>
+          <tspan x="<%= cx.round(2) %>" dy="4"><%= lines[0] %></tspan>
+        <% else %>
+          <tspan x="<%= cx.round(2) %>" dy="-2"><%= lines[0] %></tspan>
+          <tspan x="<%= cx.round(2) %>" dy="12"><%= lines[1] %></tspan>
+        <% end %>
       </text>
+
+    <% if clickable %>
+      </a>
     <% end %>
   <% end %>
 </svg>
