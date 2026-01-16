@@ -1,0 +1,84 @@
+<h2>Run <%= @run.id %></h2>
+
+<div style="margin-bottom: 12px;">
+  <strong>Turn:</strong> <%= @run.turn %>
+  &nbsp;|&nbsp;
+  <strong>Essence:</strong> <%= @run.resources["essence"] %>
+  &nbsp;|&nbsp;
+  <strong>Favor:</strong> <%= @run.resources["favor"] %>
+  &nbsp;|&nbsp;
+  <strong>Power:</strong> <%= @run.resources["power"] %>
+</div>
+
+<%# svg layout math (axial -> pixel) %>
+<%
+  size = 42.0 # hex radius in px (tweak freely)
+  sqrt3 = Math.sqrt(3)
+
+  to_px = lambda do |q, r|
+    x = size * sqrt3 * (q + r / 2.0)
+    y = size * 1.5 * r
+    [x, y]
+  end
+
+  centers = @hexes.map { |h| to_px.call(h.q, h.r) }
+  xs = centers.map(&:first)
+  ys = centers.map(&:last)
+
+  padding = size * 2.2
+  min_x = xs.min - padding
+  max_x = xs.max + padding
+  min_y = ys.min - padding
+  max_y = ys.max + padding
+
+  view_w = (max_x - min_x)
+  view_h = (max_y - min_y)
+
+  hex_points = lambda do |cx, cy|
+    points = (0..5).map do |i|
+      angle = (Math::PI / 180.0) * (60 * i - 30) # -30 => pointy-top
+      px = cx + size * Math.cos(angle)
+      py = cy + size * Math.sin(angle)
+      "#{px.round(2)},#{py.round(2)}"
+    end
+    points.join(" ")
+  end
+%>
+
+<svg
+  viewBox="<%= [min_x, min_y, view_w, view_h].map { |n| n.round(2) }.join(' ') %>"
+  width="900"
+  height="650"
+  style="border: 1px solid #ddd; background: #fafafa"
+>
+  <% @hexes.each do |h| %>
+    <% cx, cy = to_px.call(h.q, h.r) %>
+    <% name = h.data["name"] || h.spell_key %>
+
+    <%# simple styling %>
+    <% is_center = (h.q == 0 && h.r == 0) %>
+    <% fill = is_center ? "#e8f5ff" : "#ffffff" %>
+    <% stroke = is_center ? "#1976d2" : "#444" %>
+
+    <polygon
+      points="<%= hex_points.call(cx, cy) %>"
+      fill="<%= fill %>"
+      stroke="<%= stroke %>"
+      stroke-width="2"
+    >
+      <title><%= name %></title>
+    </polygon>
+
+    <text
+      x="<%= cx.round(2) %>"
+      y="<%= cy.round(2) %>"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-size="12"
+      fill="#111"
+      style="pointer-events:none;"
+    >
+      <%= name %>
+    </text>
+  <% end %>
+</svg>
