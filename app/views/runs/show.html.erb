@@ -1,5 +1,17 @@
 <h2>Run <%= @run.id %></h2>
 
+<% if notice %>
+  <div style="padding:8px; background:#e8f5e9; border:1px solid #c8e6c9; margin-bottom:10px;">
+    <%= notice %>
+  </div>
+<% end %>
+
+<% if alert %>
+  <div style="padding:8px; background:#ffebee; border:1px solid #ffcdd2; margin-bottom:10px;">
+    <%= alert %>
+  </div>
+<% end %>
+
 <div style="margin-bottom: 12px;">
   <strong>Turn:</strong> <%= @run.turn %>
   &nbsp;|&nbsp;
@@ -10,9 +22,8 @@
   <strong>Power:</strong> <%= @run.resources["power"] %>
 </div>
 
-<%# svg layout math (axial -> pixel) %>
 <%
-  size = 42.0 # hex radius in px (tweak freely)
+  size = 42.0
   sqrt3 = Math.sqrt(3)
 
   to_px = lambda do |q, r|
@@ -35,13 +46,20 @@
   view_h = (max_y - min_y)
 
   hex_points = lambda do |cx, cy|
-    points = (0..5).map do |i|
-      angle = (Math::PI / 180.0) * (60 * i - 30) # -30 => pointy-top
+    (0..5).map do |i|
+      angle = (Math::PI / 180.0) * (60 * i - 30)
       px = cx + size * Math.cos(angle)
       py = cy + size * Math.sin(angle)
       "#{px.round(2)},#{py.round(2)}"
-    end
-    points.join(" ")
+    end.join(" ")
+  end
+
+  unlocked = ->(hex) { @unlocked_hex_ids.include?(hex.id) }
+
+  available = lambda do |hex|
+    next false if unlocked.call(hex)
+    neighbor_hexes = Hex.where(hex.neighbors.map { |q, r| { q: q, r: r } })
+    neighbor_hexes.any? { |nh| @unlocked_hex_ids.include?(nh.id) }
   end
 %>
 
@@ -49,36 +67,81 @@
   viewBox="<%= [min_x, min_y, view_w, view_h].map { |n| n.round(2) }.join(' ') %>"
   width="900"
   height="650"
-  style="border: 1px solid #ddd; background: #fafafa"
+  style="border: 1px solid #ddd; background: #fafafa;"
 >
   <% @hexes.each do |h| %>
     <% cx, cy = to_px.call(h.q, h.r) %>
     <% name = h.data["name"] || h.spell_key %>
 
-    <%# simple styling %>
-    <% is_center = (h.q == 0 && h.r == 0) %>
-    <% fill = is_center ? "#e8f5ff" : "#ffffff" %>
-    <% stroke = is_center ? "#1976d2" : "#444" %>
+    <%
+      is_unlocked = unlocked.call(h)
+      is_available = available.call(h)
 
-    <polygon
-      points="<%= hex_points.call(cx, cy) %>"
-      fill="<%= fill %>"
-      stroke="<%= stroke %>"
-      stroke-width="2"
-    >
-      <title><%= name %></title>
-    </polygon>
+      fill =
+        if is_unlocked
+          "#e8f5ff"
+        elsif is_available
+          "#fff8e1"
+        else
+          "#f3f3f3"
+        end
 
-    <text
-      x="<%= cx.round(2) %>"
-      y="<%= cy.round(2) %>"
-      text-anchor="middle"
-      dominant-baseline="middle"
-      font-size="12"
-      fill="#111"
-      style="pointer-events:none;"
-    >
-      <%= name %>
-    </text>
+      stroke =
+        if is_unlocked
+          "#1976d2"
+        elsif is_available
+          "#f57c00"
+        else
+          "#999"
+        end
+    %>
+
+    <% if is_available %>
+      <a href="<%= unlock_run_path(@run, hex_id: h.id) %>"
+        data-turbo-method="post"
+        style="cursor:pointer;">
+        <polygon
+          points="<%= hex_points.call(cx, cy) %>"
+          fill="<%= fill %>"
+          stroke="<%= stroke %>"
+          stroke-width="2"
+        >
+          <title><%= name %></title>
+        </polygon>
+
+        <text
+          x="<%= cx.round(2) %>"
+          y="<%= cy.round(2) %>"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-size="12"
+          fill="#111"
+          style="pointer-events:none;"
+        >
+          <%= name %>
+        </text>
+      </a>
+    <% else %>
+      <polygon
+        points="<%= hex_points.call(cx, cy) %>"
+        fill="<%= fill %>"
+        stroke="<%= stroke %>"
+        stroke-width="2"
+      >
+        <title><%= name %></title>
+      </polygon>
+
+      <text
+        x="<%= cx.round(2) %>"
+        y="<%= cy.round(2) %>"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        font-size="12"
+        fill="#111"
+        style="pointer-events:none;"
+      >
+        <%= name %>
+      </text>
+    <% end %>
   <% end %>
 </svg>
