@@ -45,7 +45,8 @@ module Game
 
       # all unlocked hexes
       run.hexes.find_each do |hex|
-        effect = hex.data["effect"]
+        spell = run.spell_for(hex)
+        effect = spell["effect"]
         next if effect.blank?
 
         timing = effect["timing"]

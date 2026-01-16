@@ -31,7 +31,8 @@ module Runs
     end
 
     def affordable_unlock?(hex)
-      cost = (hex.data["cost"] || {})
+      spell = @run.spell_for(hex)
+      cost = (spell["cost"] || {})
       cost.all? do |k, v|
         v.to_i <= 0 || run.resources.fetch(k.to_s, 0).to_i >= v.to_i
       end

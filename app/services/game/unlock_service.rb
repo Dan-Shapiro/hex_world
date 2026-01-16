@@ -13,14 +13,22 @@ module Game
       raise UnlockError, "already unlocked" if unlocked?(hex)
       raise UnlockError, "not adjacent to an unlocked hex" unless adjacent_to_unlocked?(hex)
 
-      cost = (hex.data["cost"] || {}).transform_keys(&:to_s)
+      spell = run.spell_for(hex)
+      raise UnlockError, "no spell assigned" if spell.blank?
+
+      cost = (spell["cost"] || {}).transform_keys(&:to_s)
+      effect = spell["effect"]
+      # tags = spell["tags"]
+      # name = spell["name"]
+
       ensure_can_pay!(cost)
 
       Run.transaction do
         spend!(cost)
         RunHex.create!(run: run, hex: hex, unlocked_at_turn: run.turn)
 
-        effect = hex.data["effect"]
+        spell = run.spell_for(hex)
+        effect = spell["effect"]
         effect = effect.is_a?(Hash) ? effect.with_indifferent_access : nil
         if effect.present? && effect[:timing] == "on_unlock"
           Game::EffectResolver.new(run).apply!(effect)

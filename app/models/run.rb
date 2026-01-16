@@ -22,6 +22,16 @@ class Run < ApplicationRecord
     set_resources!(key, current + amount.to_i)
   end
 
+  def spell_key_for(hex)
+    (state["spellbook"] || {})[hex.id.to_s]
+  end
+
+  def spell_for(hex)
+    key = spell_key_for(hex)
+    return nil if key.blank?
+    Game::SpellLibrary.fetch!(key)
+  end
+
   private
 
   def set_default_state
