@@ -14,12 +14,15 @@
 
 <div style="margin-bottom: 12px;">
   <strong>Turn:</strong> <%= @run.turn %>
-  &nbsp;|&nbsp;
-  <strong>Essence:</strong> <%= @run.resources["essence"] %>
-  &nbsp;|&nbsp;
-  <strong>Favor:</strong> <%= @run.resources["favor"] %>
-  &nbsp;|&nbsp;
-  <strong>Power:</strong> <%= @run.resources["power"] %>
+</div>
+
+<div style="margin-bottom: 14px;">
+  <strong>Resources:</strong>
+  <% @run.resources.sort_by { |k, _| k }.each do |k, v| %>
+    <span style="display:inline-block; margin-right:10px;">
+      <%= k %>: <%= v %>
+    </span>
+  <% end %>
 </div>
 
 <div style="margin-bottom: 14px;">
@@ -88,6 +91,33 @@
   <span style="display:inline-block; width:12px; height:12px; background:#f3f3f3; border:2px solid #999; vertical-align:middle;"></span>
   Locked
 </div>
+
+<%
+  unlocked_hexes = @run.hexes.includes(:run_hexes)
+  castable_hexes = unlocked_hexes.select do |hx|
+    effect = hx.data["effect"]
+    Array(hx.data["tags"]).include?("active") &&
+      effect.is_a?(Hash) &&
+      effect["timing"] == "on_cast"
+  end
+%>
+
+<% if castable_hexes.any? %>
+  <div style="padding:10px; border:1px solid #ddd; background:#fff; margin-bottom:12px;">
+    <strong>Cast Spells</strong>
+    <div style="margin-top:8px;">
+      <% castable_hexes.each do |hx| %>
+        <div style="margin-bottom:8px;">
+          <span><%= hx.data["name"] %></span>
+          <span style="margin-left:8px; color:#555;">
+            (cost: <%= format_cost(hx.data["cost"]) %>)
+          </span>
+          <%= button_to "Cast", cast_run_path(@run, hex_id: hx.id), method: :post, form: { style: "display:inline;" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
 <svg
   viewBox="<%= [min_x, min_y, view_w, view_h].map { |n| n.round(2) }.join(' ') %>"

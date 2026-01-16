@@ -21,7 +21,8 @@ module Game
         RunHex.create!(run: run, hex: hex, unlocked_at_turn: run.turn)
 
         effect = hex.data["effect"]
-        if effect.present? && effect["timing"] == "on_unlock"
+        effect = effect.is_a?(Hash) ? effect.with_indifferent_access : nil
+        if effect.present? && effect[:timing] == "on_unlock"
           Game::EffectResolver.new(run).apply!(effect)
         end
 
