@@ -37,6 +37,13 @@ module Game
         consume.each { |k, v| run.inc_resource!(k, -v.to_i) }
         gain.each { |k, v| run.inc_resource!(k, v.to_i) }
 
+      when "change_threat"
+        amount = effect.fetch(:amount).to_i
+        s = run.state.deep_dup
+        s["threat"] = s.fetch("threat", 0).to_i + amount
+        s["threat"] = 0 if s["threat"] < 0
+        run.state = s
+
       else
         # more effects
       end

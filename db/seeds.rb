@@ -5,6 +5,7 @@ coords = Game::HexGrid.axial_coords(radius: radius)
 
 # spellbook
 SPELLS = [
+  # economy and crafting
   {
     key: "spark",
     name: "Spark",
@@ -13,10 +14,10 @@ SPELLS = [
     tags: [ "starter", "economy" ]
   },
   {
-    key: "essence_tap",
-    name: "Essence Tap",
+    key: "essence_surge",
+    name: "Essence Surge",
     cost: {},
-    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 5, "timing" => "on_unlock" },
+    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 8, "timing" => "on_unlock" },
     tags: [ "economy" ]
   },
   {
@@ -34,39 +35,112 @@ SPELLS = [
     tags: [ "crafting", "mind", "active" ]
   },
   {
+    key: "body_rune_craft",
+    name: "Craft Body Runes",
+    cost: { "essence" => 3 },
+    effect: { "type" => "convert_resource", "from" => "essence", "from_amount" => 2, "to" => "body_rune", "to_amount" => 1, "timing" => "on_cast" },
+    tags: [ "crafting", "body", "active" ]
+  },
+  {
+    key: "catalytic_focus",
+    name: "Catalytic Focus",
+    cost: { "essence" => 4 },
+    effect: { "type" => "gain_resource", "resource" => "essence", "amount" => 1, "timing" => "start_of_turn" },
+    tags: [ "economy" ]
+  },
+
+  # combat / power gain
+  {
     key: "strike",
     name: "Strike",
     cost: {},
-    effect: { "type" => "consume_and_gain", "consume" => { "air_rune" => 1, "mind_rune" => 1 }, "gain" => { "power" => 4 }, "timing" => "on_cast" },
+    effect: {
+      "type" => "consume_and_gain",
+      "consume" => { "air_rune" => 1, "mind_rune" => 1 },
+      "gain" => { "power" => 4 },
+      "timing" => "on_cast"
+    },
     tags: [ "combat", "active" ]
   },
   {
-    key: "focus",
-    name: "Focus",
-    cost: { "essence" => 4 },
-    effect: { "type" => "discount_unlock", "resource" => "essence", "amount" => 1 },
-    tags: [ "utility" ]
+    key: "bash",
+    name: "Bash",
+    cost: {},
+    effect: {
+      "type" => "consume_and_gain",
+      "consume" => { "body_rune" => 1 },
+      "gain" => { "power" => 6 },
+      "timing" => "on_cast"
+    },
+    tags: [ "combat", "active" ]
   },
   {
-    key: "sara_grace",
-    name: "Saradomin's Grace",
-    cost: { "essence" => 5 },
-    effect: { "type" => "gain_resource", "resource" => "favor", "amount" => 1, "timing" => "start_of_turn", "alignment" => "saradomin" },
-    tags: [ "sara", "alignment" ]
+    key: "channel",
+    name: "Channel",
+    cost: {},
+    effect: { "type" => "gain_resource", "resource" => "power", "amount" => 1, "timing" => "start_of_turn" },
+    tags: [ "combat" ]
+  },
+
+  # threat control
+  {
+    key: "calm",
+    name: "Calm",
+    cost: { "essence" => 2 },
+    effect: { "type" => "change_threat", "amount" => -2, "timing" => "on_cast" },
+    tags: [ "utility", "active" ]
   },
   {
-    key: "zam_fury",
-    name: "Zamorak's Fury",
-    cost: { "essence" => 5 },
-    effect: { "type" => "gain_resource", "resource" => "power", "amount" => 2, "timing" => "start_of_turn", "alignment" => "zamorak" },
-    tags: [ "zammy", "alignment" ]
+    key: "ward",
+    name: "Ward",
+    cost: { "essence" => 3 },
+    effect: { "type" => "change_threat", "amount" => -3, "timing" => "on_cast" },
+    tags: [ "utility", "active" ]
   },
   {
-    key: "guthix_balance",
+    key: "recklessness",
+    name: "Recklessness",
+    cost: {},
+    effect: {
+      "type" => "consume_and_gain",
+      "consume" => { "essence" => 3 },
+      "gain" => { "power" => 10 },
+      "timing" => "on_cast"
+    },
+    tags: [ "combat", "active", "risk" ]
+  },
+
+  # god-aligned favor
+  {
+    key: "sara_prayer",
+    name: "Saradomin's Prayer",
+    cost: { "essence" => 3 },
+    effect: { "type" => "change_threat", "amount" => -2, "timing" => "on_cast" },
+    tags: [ "sara", "active" ]
+  },
+  {
+    key: "zam_bloodlust",
+    name: "Zamorak's Bloodlust",
+    cost: {},
+    effect: {
+      "type" => "consume_and_gain",
+      "consume" => { "essence" => 2 },
+      "gain" => { "power" => 7 },
+      "timing" => "on_cast"
+    },
+    tags: [ "zammy", "active" ]
+  },
+  {
+    key: "guth_balance",
     name: "Guthix's Balance",
-    cost: { "essence" => 5 },
-    effect: { "type" => "convert_resource", "from" => "favor", "from_amount" => 1, "to" => "essence", "to_amount" => 2, "timing" => "start_of_turn", "alignment" => "guthix" },
-    tags: [ "guthix", "alignment" ]
+    cost: {},
+    effect: {
+      "type" => "consume_and_gain",
+      "consume" => { "power" => 2 },
+      "gain" => { "essence" => 5 },
+      "timing" => "on_cast"
+    },
+    tags: [ "guthix", "active" ]
   }
 ].freeze
 
