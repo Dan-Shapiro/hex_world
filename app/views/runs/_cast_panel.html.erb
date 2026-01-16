@@ -16,7 +16,7 @@
     <strong>Cast Spells</strong>
     <div style="margin-top:8px;">
       <% castable_hexes.each do |hx| %>
-      <% spell = run.spell_for(hx) %>
+        <% spell = run.spell_for(hx) %>
         <div style="margin-bottom:8px;">
           <span><%= spell["name"] %></span>
           <span style="margin-left:8px; color:#555;">

@@ -22,6 +22,11 @@ module Runs
       @unlocked_hex_ids.include?(hex.id)
     end
 
+    def revealed?(hex)
+      stored = Array(run.state["revealed_hex_ids"]).include?(hex.id.to_s)
+      stored || available?(hex) || unlocked?(hex)
+    end
+
     def available?(hex)
       return false if unlocked?(hex)
       hex.neighbors.any? do |q, r|
@@ -73,6 +78,13 @@ module Runs
     end
 
     def style_for(hex)
+      unless revealed?(hex)
+        return {
+          fill: "#eeeeee",
+          stroke: "#666666"
+        }
+      end
+
       is_unlocked = unlocked?(hex)
       is_available = available?(hex)
       affordable = affordable_unlock?(hex)

@@ -34,6 +34,11 @@ module Game
           Game::EffectResolver.new(run).apply!(effect)
         end
 
+        s = run.state.deep_dup
+        s["revealed_hex_ids"] ||= []
+        s["revealed_hex_ids"] << hex.id.to_s unless s["revealed_hex_ids"].include?(hex.id.to_s)
+        run.state = s
+
         run.save!
       end
 
