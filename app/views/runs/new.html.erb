@@ -1,17 +1,43 @@
-<h1>Hex World</h1>
-<p>Choose your alignment to begin.</p>
+<div class="menu">
+  <div class="menu-card">
+    <div class="menu-title">Hex World</div>
+    <div class="menu-subtitle">An OSRS-inspired spellbook roguelike</div>
 
-<%= form_with url: runs_path, method: :post do %>
-  <div style="margin-bottom: 12px;">
-    <label><strong>Alignment:</strong></label><br>
+    <div class="menu-divider"></div>
 
-    <% @alignments.each do |a| %>
-      <label style="display:block; margin:6px 0;">
-        <%= radio_button_tag :alignment, a, (a == "guthix") %>
-        <%= a.capitalize %>
-      </label>
-    <% end %>
+    <div class="menu-section">
+      <div class="menu-section-title">Choose your alignment</div>
+      <div class="menu-section-sub">Your god shapes how the run plays.</div>
+
+      <%= form_with url: runs_path, method: :post, class: "menu-form" do %>
+        <div class="alignment-grid">
+          <label class="align-card">
+            <%= radio_button_tag :alignment, "saradomin", false %>
+            <div class="align-name">Saradomin</div>
+            <div class="align-desc">Slower threat growth. Safer, steadier runs.</div>
+          </label>
+
+          <label class="align-card">
+            <%= radio_button_tag :alignment, "zamorak", false %>
+            <div class="align-name">Zamorak</div>
+            <div class="align-desc">+1 Power on cast. Aggressive, faster wins.</div>
+          </label>
+
+          <label class="align-card">
+            <%= radio_button_tag :alignment, "guthix", true %>
+            <div class="align-name">Guthix</div>
+            <div class="align-desc">+1 Essence each turn. Balanced economy.</div>
+          </label>
+        </div>
+
+        <div class="menu-actions">
+          <%= submit_tag "Start Run", class: "btn btn-primary btn-wide" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="menu-foot">
+      Tip: You can click hexes in the spellbook to inspect spells as you progress.
+    </div>
   </div>
-
-  <%= submit_tag "Start Run" %>
-<% end %>
+</div>

@@ -1,0 +1,58 @@
+<%
+  spell = run.spell_for(selected_hex) if selected_hex.present?
+  revealed = selected_hex.present? ? presenter.revealed?(selected_hex) : false
+%>
+
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Spell</div>
+    <% if selected_hex.present? %>
+      <div class="panel-sub">Hex <%= selected_hex.q %>,<%= selected_hex.r %></div>
+    <% end %>
+  </div>
+
+  <% if selected_hex.blank? %>
+    <div class="muted">Select a hex to view details.</div>
+  <% elsif !revealed || spell.blank? %>
+    <div class="spell-name">???</div>
+    <div class="muted">This spell is unknown.</div>
+  <% else %>
+    <div class="spell-name"><%= spell["name"] %></div>
+
+    <div class="pill-row">
+      <% Array(spell["tags"]).each do |t| %>
+        <span class="pill"><%= t %></span>
+      <% end %>
+    </div>
+
+    <div class="kv">
+      <div class="kv-row">
+        <div class="k">Unlock</div>
+        <div class="v"><%= format_cost(spell["cost"]) %></div>
+      </div>
+      <div class="kv-row">
+        <div class="k">Cast</div>
+        <div class="v"><%= format_cost(spell["cast_cost"], effect: spell["effect"]) %></div>
+      </div>
+      <div class="kv-row">
+        <div class="k">State</div>
+        <div class="v">
+          <% if presenter.unlocked?(selected_hex) %>
+            Unlocked
+          <% elsif presenter.available?(selected_hex) %>
+            Available
+          <% else %>
+            Locked
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="effect">
+      <div class="effect-title">Effect (debug)</div>
+      <pre class="effect-code"><%= JSON.pretty_generate(spell["effect"] || {}) %></pre>
+    </div>
+  <% end %>
+</div>

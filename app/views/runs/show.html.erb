@@ -1,18 +1,39 @@
-<h2>Run <%= @run.id %></h2>
-
-<% if notice %>
-  <div style="padding:8px; background:#e8f5e9; border:1px solid #c8e6c9; margin-bottom:10px;">
-    <%= notice %>
+<div class="game">
+  <div class="game-topbar">
+    <div class="game-title">Hex World</div>
+    <div class="game-subtitle">Run <%= @run.id %></div>
   </div>
-<% end %>
 
-<% if alert %>
-  <div style="padding:8px; background:#ffebee; border:1px solid #ffcdd2; margin-bottom:10px;">
-    <%= alert %>
+  <div class="book">
+    <div class="page left">
+      <div class="page-header">
+        <div class="page-title">Spellbook</div>
+        <div class="page-hint">Click a hex to inspect • Click an available hex to unlock</div>
+      </div>
+
+      <%= render "hex_grid",
+        run: @run,
+        hexes: @hexes,
+        presenter: @presenter,
+        selected_hex: @selected_hex %>
+    </div>
+
+    <div class="page right">
+      <% if notice %>
+        <div class="toast toast-ok"><%= notice %></div>
+      <% end %>
+
+      <% if alert %>
+        <div class="toast toast-bad"><%= alert %></div>
+      <% end %>
+
+      <%= render "status_banner", run: @run %>
+
+      <div class="stack">
+        <%= render "hud", run: @run %>
+        <%= render "cast_panel", run: @run, presenter: @presenter %>
+        <%= render "spell_details", run: @run, presenter: @presenter, selected_hex: @selected_hex %>
+      </div>
+    </div>
   </div>
-<% end %>
-
-<%= render "status_banner", run: @run %>
-<%= render "hud", run: @run %>
-<%= render "cast_panel", run: @run %>
-<%= render "hex_grid", run: @run, hexes: @hexes, presenter: @presenter %>
+</div>

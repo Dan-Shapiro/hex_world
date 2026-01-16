@@ -1,9 +1,8 @@
 <svg
   viewBox="<%= presenter.view_box %>"
-  width="900"
-  height="650"
-  style="border: 1px solid #ddd; background: #fafafa;"
+  class="hex-svg"
 >
+  <!-- PASS 1: base outlines -->
   <g>
     <% hexes.each do |h| %>
       <% cx, cy = presenter.center_px(h) %>
@@ -11,7 +10,7 @@
       <polygon
         points="<%= points %>"
         fill="none"
-        stroke="#666"
+        stroke="#5a5a5a"
         stroke-width="2"
         stroke-linejoin="round"
       />
@@ -24,11 +23,19 @@
 
     <% revealed = presenter.revealed?(h) %>
     <% spell = revealed ? run.spell_for(h) : nil %>
-    <% name = revealed && spell ? spell["name"] : "???" %>
+    <% name = (revealed && spell) ? spell["name"] : "???" %>
 
     <% st = presenter.style_for(h) %>
     <% is_available = presenter.available?(h) %>
-    <% clickable = presenter.active? && is_available %>
+    <% unlockable = presenter.active? && is_available %>
+
+    <% href =
+      if unlockable
+        unlock_run_path(run, hex_id: h.id)
+      else
+        run_path(run, hex_id: h.id)
+      end
+    %>
 
     <% tooltip =
       if revealed && spell
@@ -42,19 +49,17 @@
       end
     %>
 
-    <% lines = hex_label_lines(name, max_chars_per_line: 15) %>
+    <% is_selected = selected_hex.present? && selected_hex.id == h.id %>
+    <% lines = hex_label_lines(name, max_chars_per_line: 12) %>
     <% fs = hex_font_size(name) %>
 
-    <% if clickable %>
-      <a href="<%= unlock_run_path(run, hex_id: h.id) %>" style="cursor:pointer;">
-    <% end %>
-
-      <!-- PASS 2: fill only -->
+    <a href="<%= href %>" class="hex-link">
+      <!-- PASS 2: fill -->
       <polygon points="<%= points %>" fill="<%= st[:fill] %>" stroke="none">
         <title><%= tooltip %></title>
       </polygon>
 
-      <!-- PASS 3: highlight outline (drawn on top so it never gets clipped) -->
+      <!-- PASS 3: state outline -->
       <polygon
         points="<%= points %>"
         fill="none"
@@ -63,13 +68,25 @@
         stroke-linejoin="round"
       />
 
+      <!-- selection outline -->
+      <% if is_selected %>
+        <polygon
+          points="<%= points %>"
+          fill="none"
+          stroke="#1b1b1b"
+          stroke-width="2"
+          stroke-dasharray="6 4"
+          stroke-linejoin="round"
+        />
+      <% end %>
+
       <!-- label -->
       <text
         x="<%= cx.round(2) %>"
         y="<%= cy.round(2) %>"
         text-anchor="middle"
         font-size="<%= fs %>"
-        fill="#111"
+        fill="#151515"
         style="pointer-events:none; font-family: Georgia, 'Times New Roman', serif;"
       >
         <% if lines.length == 1 %>
@@ -79,9 +96,6 @@
           <tspan x="<%= cx.round(2) %>" dy="12"><%= lines[1] %></tspan>
         <% end %>
       </text>
-
-    <% if clickable %>
-      </a>
-    <% end %>
+    </a>
   <% end %>
 </svg>

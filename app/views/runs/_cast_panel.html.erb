@@ -2,8 +2,10 @@
 
 <%
   unlocked_hexes = run.hexes
-  castable_hexes = unlocked_hexes.select do |hx|
+  castable = unlocked_hexes.select do |hx|
     spell = run.spell_for(hx)
+    next false if spell.blank?
+
     effect = spell["effect"]
     Array(spell["tags"]).include?("active") &&
       effect.is_a?(Hash) &&
@@ -11,21 +13,25 @@
   end
 %>
 
-<% if castable_hexes.any? %>
-  <div style="padding:10px; border:1px solid #ddd; background:#fff; margin-bottom:12px;">
-    <strong>Cast Spells</strong>
-    <div style="margin-top:8px;">
-      <% castable_hexes.each do |hx| %>
+<% if castable.any? %>
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Cast</div>
+      <div class="panel-sub">Only unlocked active spells appear here.</div>
+    </div>
+
+    <div class="cast-list">
+      <% castable.each do |hx| %>
         <% spell = run.spell_for(hx) %>
-        <div style="margin-bottom:8px;">
-          <span><%= spell["name"] %></span>
-          <span style="margin-left:8px; color:#555;">
-            (cost: <%= format_cost(spell["cast_cost"], effect: spell["effect"]) %>)
-          </span>
-          <%= button_to "Cast",
-                cast_run_path(run, hex_id: hx.id),
-                method: :post,
-                form: { style: "display:inline;" } %>
+        <div class="cast-row">
+          <div class="cast-main">
+            <div class="cast-name"><%= spell["name"] %></div>
+            <div class="cast-meta">Cost: <%= format_cost(spell["cast_cost"], effect: spell["effect"]) %></div>
+          </div>
+
+          <div class="cast-actions">
+            <%= button_to "Cast", cast_run_path(run, hex_id: hx.id), method: :post, class: "btn btn-secondary" %>
+          </div>
         </div>
       <% end %>
     </div>
